@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var showingResult = false
     @State private var roundResult = ""
     @State private var score = 0
+    @State private var round = 0
     @State private var shouldWin = Bool.random()
     @State private var whichObject = Int.random(in: 0...2)
     
@@ -54,17 +55,18 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Text("Score: \(score)")
+                Text("Round \(round)")
             }
         }
         .alert(isPresented: $showingResult) {
-            Alert(title: Text("RESULT"), message: Text(roundResult), dismissButton: .default(Text("Continue")) {
+            Alert(title: Text("Result"), message: Text(roundResult), dismissButton: .default(Text("Continue")) {
                 self.newRound()
             })
         }
     }
     
     func buttonTapped(_ number: Int) {
+        // I assume there's an easier way to specify what we're looking for... like if shouldWin, number should be equal to whichObject +1 spot in the array, else -1 spot in the array, taking wrapping into account. But I'm not sure how to do that!
         switch whichObject {
         case 0:
             if shouldWin && number == 1 {
@@ -105,10 +107,22 @@ struct ContentView: View {
             roundResult = "You were wrong!"
         }
         
+        round += 1
+        if round >= 10 {
+            roundResult = roundResult + " And the game is over! Your score is \(score) out of a possible 10!"
+            print("Game is over")
+        }
+        
         showingResult = true
+        print("Result should be shown")
     }
     
     func newRound() {
+        if round >= 10 {
+            round = 1
+            score = 0
+        }
+                
         whichObject = Int.random(in: 0...2)
         shouldWin = Bool.random()
     }
